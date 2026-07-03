@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://hindsight.ai/ontology#"
+     xml:base="http://hindsight.ai/ontology"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+    <owl:Ontology rdf:about="http://hindsight.ai/ontology">
+        <rdfs:comment>Hindsight: a domain ontology for AI/LLM production incidents. Used by Cognee to ground and canonicalize entities extracted from incident write-ups so that causally-related incidents connect across the graph.</rdfs:comment>
+    </owl:Ontology>
+
+    <!-- ============================================================ -->
+    <!-- TOP-LEVEL CLASSES (the five-part shape of every incident)     -->
+    <!-- ============================================================ -->
+
+    <owl:Class rdf:about="#Incident">
+        <rdfs:comment>Something about the AI system's behavior went wrong, was noticed, and was fixed.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Cause">
+        <rdfs:comment>The change or condition that triggered an incident.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Artifact">
+        <rdfs:comment>A component of the AI system that incidents touch: prompts, models, eval suites, indexes, deployments.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Signal">
+        <rdfs:comment>How the incident was detected: an eval drop, a cost alert, a latency spike, a user report.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Resolution">
+        <rdfs:comment>How the incident was fixed.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#PreventionRule">
+        <rdfs:comment>A durable, reusable lesson derived from one or more incidents. Created by the memify enrichment step, not authored directly.</rdfs:comment>
+    </owl:Class>
+
+    <!-- ============================================================ -->
+    <!-- INCIDENT SUBCLASSES (the five kinds)                          -->
+    <!-- ============================================================ -->
+
+    <owl:Class rdf:about="#RegressionIncident">
+        <rdfs:subClassOf rdf:resource="#Incident"/>
+        <rdfs:comment>Output quality silently degraded without anyone intending it.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#CostIncident">
+        <rdfs:subClassOf rdf:resource="#Incident"/>
+        <rdfs:comment>Token spend spiked unexpectedly.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#LatencyIncident">
+        <rdfs:subClassOf rdf:resource="#Incident"/>
+        <rdfs:comment>Response times degraded; sometimes timeouts.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#RAGIncident">
+        <rdfs:subClassOf rdf:resource="#Incident"/>
+        <rdfs:comment>Retrieval started returning wrong context, producing confidently wrong answers.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#OutageIncident">
+        <rdfs:subClassOf rdf:resource="#Incident"/>
+        <rdfs:comment>Hard failure: the feature stopped working (provider down, rate limit, breaking API change).</rdfs:comment>
+    </owl:Class>
+
+    <!-- ============================================================ -->
+    <!-- CAUSE SUBCLASSES                                              -->
+    <!-- ============================================================ -->
+
+    <owl:Class rdf:about="#PromptChange">
+        <rdfs:subClassOf rdf:resource="#Cause"/>
+        <rdfs:comment>A prompt was edited.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ModelChange">
+        <rdfs:subClassOf rdf:resource="#Cause"/>
+        <rdfs:comment>A model version was changed or a provider was swapped.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ConfigChange">
+        <rdfs:subClassOf rdf:resource="#Cause"/>
+        <rdfs:comment>A parameter changed: temperature, max_tokens, routing, retries.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#DataChange">
+        <rdfs:subClassOf rdf:resource="#Cause"/>
+        <rdfs:comment>The corpus, index, or training/few-shot data changed.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#DependencyChange">
+        <rdfs:subClassOf rdf:resource="#Cause"/>
+        <rdfs:comment>An upstream API, library, or provider changed behavior.</rdfs:comment>
+    </owl:Class>
+
+    <!-- ============================================================ -->
+    <!-- ARTIFACT SUBCLASSES                                           -->
+    <!-- ============================================================ -->
+
+    <owl:Class rdf:about="#Prompt">
+        <rdfs:subClassOf rdf:resource="#Artifact"/>
+        <rdfs:comment>A prompt template used by a feature.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Model">
+        <rdfs:subClassOf rdf:resource="#Artifact"/>
+        <rdfs:comment>An LLM, identified by name/version.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EvalSuite">
+        <rdfs:subClassOf rdf:resource="#Artifact"/>
+        <rdfs:comment>A set of automated quality checks for a feature.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#VectorIndex">
+        <rdfs:subClassOf rdf:resource="#Artifact"/>
+        <rdfs:comment>A retrieval index for a RAG feature.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Deployment">
+        <rdfs:subClassOf rdf:resource="#Artifact"/>
+        <rdfs:comment>A running feature/service that uses models, prompts, and indexes.</rdfs:comment>
+    </owl:Class>
+
+    <!-- ============================================================ -->
+    <!-- SIGNAL SUBCLASSES                                            -->
+    <!-- ============================================================ -->
+
+    <owl:Class rdf:about="#EvalMetric">
+        <rdfs:subClassOf rdf:resource="#Signal"/>
+        <rdfs:comment>An automated quality score (e.g., faithfulness, accuracy).</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#CostMetric">
+        <rdfs:subClassOf rdf:resource="#Signal"/>
+        <rdfs:comment>Token spend per unit time.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#LatencyMetric">
+        <rdfs:subClassOf rdf:resource="#Signal"/>
+        <rdfs:comment>Response time, e.g. p95 latency.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#UserReport">
+        <rdfs:subClassOf rdf:resource="#Signal"/>
+        <rdfs:comment>A human-reported complaint or observation.</rdfs:comment>
+    </owl:Class>
+
+    <!-- ============================================================ -->
+    <!-- RESOLUTION SUBCLASSES                                        -->
+    <!-- ============================================================ -->
+
+    <owl:Class rdf:about="#Rollback">
+        <rdfs:subClassOf rdf:resource="#Resolution"/>
+        <rdfs:comment>Reverted a change to a prior known-good state.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#PromptFix">
+        <rdfs:subClassOf rdf:resource="#Resolution"/>
+        <rdfs:comment>Edited the prompt to correct the behavior.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ConfigFix">
+        <rdfs:subClassOf rdf:resource="#Resolution"/>
+        <rdfs:comment>Changed a parameter to correct the behavior.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Guardrail">
+        <rdfs:subClassOf rdf:resource="#Resolution"/>
+        <rdfs:comment>Added a check (often an eval gate) to prevent recurrence.</rdfs:comment>
+    </owl:Class>
+
+    <!-- ============================================================ -->
+    <!-- OBJECT PROPERTIES (the edges)                                -->
+    <!-- ============================================================ -->
+
+    <owl:ObjectProperty rdf:about="#caused_by">
+        <rdfs:domain rdf:resource="#Incident"/>
+        <rdfs:range rdf:resource="#Cause"/>
+        <rdfs:comment>Links an incident to what triggered it.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#detected_via">
+        <rdfs:domain rdf:resource="#Incident"/>
+        <rdfs:range rdf:resource="#Signal"/>
+        <rdfs:comment>Links an incident to how it was noticed.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#affected">
+        <rdfs:domain rdf:resource="#Incident"/>
+        <rdfs:range rdf:resource="#Artifact"/>
+        <rdfs:comment>Links an incident to the system components it touched.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#resolved_by">
+        <rdfs:domain rdf:resource="#Incident"/>
+        <rdfs:range rdf:resource="#Resolution"/>
+        <rdfs:comment>Links an incident to how it was fixed.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#triggered_by_change_to">
+        <rdfs:domain rdf:resource="#Cause"/>
+        <rdfs:range rdf:resource="#Artifact"/>
+        <rdfs:comment>Links a cause to the specific artifact that was changed.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#recurrence_of">
+        <rdfs:domain rdf:resource="#Incident"/>
+        <rdfs:range rdf:resource="#Incident"/>
+        <rdfs:comment>Links an incident to an earlier incident it repeats. The key cross-incident relation.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#depends_on">
+        <rdfs:domain rdf:resource="#Artifact"/>
+        <rdfs:range rdf:resource="#Artifact"/>
+        <rdfs:comment>Links artifacts in a dependency relationship (a deployment uses a model, an eval suite tests a prompt).</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#prevented_by">
+        <rdfs:domain rdf:resource="#Incident"/>
+        <rdfs:range rdf:resource="#PreventionRule"/>
+        <rdfs:comment>Links an incident to a prevention rule that would have caught it.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#derived_from">
+        <rdfs:domain rdf:resource="#PreventionRule"/>
+        <rdfs:range rdf:resource="#Incident"/>
+        <rdfs:comment>Provenance: links a derived rule back to the incident(s) it was learned from.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <!-- ============================================================ -->
+    <!-- SEED INDIVIDUALS (anchors for canonicalization)              -->
+    <!-- A small set of named system components that recur across     -->
+    <!-- incidents. These give the resolver fixed points so that      -->
+    <!-- "the summarizer prompt" in two write-ups collapses to ONE    -->
+    <!-- node. Kept deliberately light - most nodes come from          -->
+    <!-- extraction, not pre-declaration.                              -->
+    <!-- ============================================================ -->
+
+    <owl:NamedIndividual rdf:about="#TicketSummarizerPrompt">
+        <rdf:type rdf:resource="#Prompt"/>
+        <rdfs:label>Ticket Summarizer Prompt</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#OnboardingAssistantPrompt">
+        <rdf:type rdf:resource="#Prompt"/>
+        <rdfs:label>Onboarding Assistant Prompt</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DocSearchIndex">
+        <rdf:type rdf:resource="#VectorIndex"/>
+        <rdfs:label>Doc Search Index</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SummaryQualityEval">
+        <rdf:type rdf:resource="#EvalSuite"/>
+        <rdfs:label>Summary Quality Eval Suite</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SupportDeployment">
+        <rdf:type rdf:resource="#Deployment"/>
+        <rdfs:label>Support Feature Deployment</rdfs:label>
+    </owl:NamedIndividual>
+
+</rdf:RDF>
