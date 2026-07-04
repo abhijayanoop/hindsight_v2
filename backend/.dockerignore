@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+hindsight.db
+.cognee_system/
+.cognee_data/
+.git/
+tests/

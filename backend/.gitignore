@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+hindsight.db
+.cognee_system/
+.cognee_data/
+.pytest_cache/
+.ruff_cache/
